@@ -1,0 +1,88 @@
+packetbeat.interfaces.device: any
+
+# === Flow Configuration ===
+packetbeat.flows:
+  timeout: 30s
+  period: 10s
+
+# === Protocol Configuration ===
+packetbeat.protocols:
+  - type: icmp
+    enabled: true
+
+  - type: dhcpv4
+    ports: [67, 68]
+
+  - type: dns
+    ports: [53]
+    include_authorities: true
+    include_additionals: true
+
+  - type: http
+    ports: [80, 8080, 8000, 5000, 8002]
+
+  - type: amqp
+    ports: [5672]
+
+  - type: cassandra
+    ports: [9042]
+
+  - type: memcache
+    ports: [11211]
+
+  - type: mysql
+    ports: [3306, 3307]
+
+  - type: pgsql
+    ports: [5432]
+
+  - type: redis
+    ports: [6379]
+
+  - type: thrift
+    ports: [9090]
+
+  - type: mongodb
+    ports: [27017]
+
+  - type: tls
+    ports: [443, 993, 995, 5223, 8443, 8883, 9243]
+
+  - type: nfs
+    ports: [2049]
+
+  - type: sip
+    ports: [5060]
+
+# === Network Configuration ===
+packetbeat.interfaces:
+  internal_networks:
+    - private
+
+# === Output Configuration ===
+output.elasticsearch:
+  hosts: ["localhost:9200"]
+
+# === Kibana Configuration ===
+setup.kibana:
+  host: "localhost:5601"
+
+# === Dashboard Configuration ===
+setup.dashboards:
+  enabled: true
+  retry.enabled: true
+  retry.interval: 5s
+  retry.maximum: 3
+
+# === Template Configuration ===
+setup.template:
+  enabled: true
+  settings:
+    index:
+      number_of_shards: 1
+      number_of_replicas: 1
+
+# === Processor Configuration ===
+processors:
+  - add_host_metadata: ~
+  - add_docker_metadata: ~
