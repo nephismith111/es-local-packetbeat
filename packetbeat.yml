@@ -12,56 +12,107 @@ packetbeat.protocols:
 
   - type: dhcpv4
     ports: [67, 68]
+    # include_request_raw: true
+    # include_response_raw: true
 
   - type: dns
     ports: [53]
     include_authorities: true
     include_additionals: true
+    # include_request_raw: true
+    # include_response_raw: true
 
   - type: http
     ports: [80, 8080, 8000, 5000, 8002]
+    # hide_keywords: []
+    # redact_authorization: true
+    # include_body_for: []
+    # include_request_headers: ["User-Agent", "Content-Type"]
+    # include_response_headers: ["Content-Type", "Server"]
+    # real_ip_header: "X-Forwarded-For"
+    # split_cookie: true
+    # send_headers: ["*"]
+    # send_all_headers: true
+    # send_request: true
+    # send_response: true
 
   - type: amqp
     ports: [5672]
+    # max_body_length: 1000
+    # send_request: true
+    # send_response: true
 
   - type: cassandra
     ports: [9042]
+    # send_request_header: true
+    # send_response_header: true
 
   - type: memcache
     ports: [11211]
+    # max_values: 1000
+    # max_bytes: 10000
+    # strip_whitespace: true
 
   - type: mysql
     ports: [3306, 3307]
+    # max_rows: 10
+    # max_row_length: 1024
+    # send_response: true
 
   - type: pgsql
     ports: [5432]
+    # max_rows: 10
+    # max_row_length: 1024
+    # send_response: true
 
   - type: redis
     ports: [6379]
+    # send_request: true
+    # send_response: true
 
   - type: thrift
     ports: [9090]
+    # string_max_size: 1000
+    # collection_max_size: 1000
+    # capture_reply: true
+    # capture_all_fields: true
 
   - type: mongodb
     ports: [27017]
+    # max_docs: 10
+    # max_doc_length: 5000
 
   - type: tls
     ports: [443, 993, 995, 5223, 8443, 8883, 9243]
+    # send_certificates: true
+    # include_raw_certificates: true
 
   - type: nfs
     ports: [2049]
+    # send_request: true
+    # send_response: true
 
   - type: sip
     ports: [5060]
+    # include_headers: ["Via", "From", "To"]
+    # send_request: true
+    # send_response: true
 
 # === Network Configuration ===
 packetbeat.interfaces:
   internal_networks:
     - private
 
+# === Logging Configuration ===
+# logging.level: debug
+# logging.selectors: ["*"]
+
 # === Output Configuration ===
 output.elasticsearch:
   hosts: ["localhost:9200"]
+  # bulk_max_size: 50
+  # worker: 1
+  # compression_level: 0
 
 # === Kibana Configuration ===
 setup.kibana:
@@ -86,3 +137,5 @@ setup.template:
 processors:
   - add_host_metadata: ~
   - add_docker_metadata: ~
+  # - drop_fields:
+  #     fields: ["agent.ephemeral_id", "agent.hostname", "agent.id", "agent.version"]
