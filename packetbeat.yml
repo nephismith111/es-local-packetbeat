@@ -1,4 +1,4 @@
-packetbeat.interfaces.device: any
+#packetbeat.interfaces.device: any
 
 # === Flow Configuration ===
 packetbeat.flows:
@@ -61,9 +61,9 @@ packetbeat.protocols:
 
   - type: pgsql
     ports: [5432]
-    # max_rows: 10
-    # max_row_length: 1024
-    # send_response: true
+    max_rows: 10
+    max_row_length: 1024
+    send_response: true
 
   - type: redis
     ports: [6379]
@@ -84,8 +84,10 @@ packetbeat.protocols:
 
   - type: tls
     ports: [443, 993, 995, 5223, 8443, 8883, 9243]
-    # send_certificates: true
-    # include_raw_certificates: true
+    send_certificates: true
+    include_detailed_fields: true
+    fingerprints: [ md5, sha1, sha256 ]
+      #    # include_raw_certificates: true
 
   - type: nfs
     ports: [2049]
@@ -100,12 +102,17 @@ packetbeat.protocols:
 
 # === Network Configuration ===
 packetbeat.interfaces:
+  device: any
+  type: af_packet
+  buffer_size_mb: 100
+  with_vlans: true
   internal_networks:
     - private
 
 # === Logging Configuration ===
-# logging.level: debug
-# logging.selectors: ["*"]
+logging.level: debug
+logging.selectors: ["pgsql", "publisher"]
+logging.to_stderr: true
 
 # === Output Configuration ===
 output.elasticsearch:

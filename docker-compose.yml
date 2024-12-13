@@ -7,25 +7,35 @@ services:
       - discovery.type=single-node
       - network.host=0.0.0.0
       - node.name=es01
-    # volumes:
-    #   - elasticsearch-data:/usr/share/elasticsearch/data
+      - ES_JAVA_OPTS=-Xms4g -Xmx4g
     ports:
       - "${ELASTIC_PORT:-9200}:9200"
+    mem_limit: 8192m
     network_mode: host
-    # networks:
-    #   - elastic
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -q '\"status\":\"green\"'"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+
   kibana:
     image: docker.elastic.co/kibana/kibana:8.16.1
     environment:
       - ELASTICSEARCH_HOSTS=http://localhost:9200
     network_mode: host
     depends_on:
-      - elasticsearch
+      elasticsearch:
+        condition: service_healthy
     # networks:
     #   - elastic
     restart: always
-  
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5601/api/status"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+
   packetbeat-dashboards:
     image: docker.elastic.co/beats/packetbeat:8.16.1
     command: setup --dashboards
@@ -35,8 +45,10 @@ services:
       - NET_RAW
     network_mode: host
     depends_on:
-      - elasticsearch
-      - kibana
+      elasticsearch:
+        condition: service_healthy
+      kibana:
+        condition: service_healthy
   packetbeat:
     image: docker.elastic.co/beats/packetbeat:8.16.1
     network_mode: host
@@ -47,7 +59,10 @@ services:
     volumes:
       - ./packetbeat.yml:/usr/share/packetbeat/packetbeat.yml
     depends_on:
-      - elasticsearch
+      elasticsearch:
+        condition: service_healthy
+      kibana:
+        condition: service_healthy
     restart: unless-stopped
   
 
